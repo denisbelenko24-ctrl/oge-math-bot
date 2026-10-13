@@ -1,4 +1,3 @@
-
 import asyncio
 import random
 import json
@@ -25,13 +24,42 @@ else:
 
 waiting_for_answer = {}
 
-tasks = [
-    {"question": "Реши уравнение: 3x + 7 = 22", "answer": "5"},
-    {"question": "Найди 15% от 200", "answer": "30"},
-    {"question": "Вычисли: 48 / 6 + 7", "answer": "15"},
-    {"question": "Реши уравнение: 2x - 4 = 10", "answer": "7"},
-    {"question": "Найди 25% от 80", "answer": "20"},
-]
+
+def generate_task():
+    task_type = random.choice(["equation", "percent", "arithmetic"])
+
+    if task_type == "equation":
+        x = random.randint(1, 20)
+        a = random.randint(2, 10)
+        b = random.randint(1, 15)
+        c = a * x + b
+
+        return {
+            "question": f"Реши уравнение: {a}x + {b} = {c}",
+            "answer": str(x)
+        }
+
+    elif task_type == "percent":
+        percent = random.choice([10, 20, 25, 30, 50])
+        number = random.randint(2, 20) * 20
+        answer = number * percent // 100
+
+        return {
+            "question": f"Найди {percent}% от {number}",
+            "answer": str(answer)
+        }
+
+    else:
+        a = random.randint(2, 12)
+        b = random.randint(2, 12)
+        c = random.randint(1, 20)
+        answer = a * b + c
+
+        return {
+            "question": f"Вычисли: {a} × {b} + {c}",
+            "answer": str(answer)
+        }
+
 
 menu = ReplyKeyboardMarkup(
     keyboard=[
@@ -63,7 +91,7 @@ async def start(message: Message):
 @dp.message(lambda message: message.text == "📘 Решать задания")
 async def task(message: Message):
     user_id = message.from_user.id
-    selected_task = random.choice(tasks)
+    selected_task = generate_task()
     waiting_for_answer[user_id] = selected_task["answer"]
     await message.answer(
         selected_task["question"] + "\n\nНапиши ответ числом."
@@ -126,3 +154,5 @@ async def main():
 
 if __name__ == "__main__":
     asyncio.run(main())
+
+
